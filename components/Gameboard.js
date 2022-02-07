@@ -83,9 +83,17 @@ for (let i = 0; i < (NBR_OF_POINTS); i++){
 
  function selectPoint(i){
     let points = [...selectedPoints];
-    points[i] = selectedPoints[i] ? false : true;
+    points[i] = selectedPoints[i]=true;
     setSelectedPoints(points);
-    
+    let numbers = i+1;
+    let sum = 0;
+    for(let x=0 ; x<NBR_OF_DICES; x++){
+    if(numbers===board3[x]){
+        sum+=board3[x];
+        
+    }
+    setTotalPoints(sum);
+}
 }
  function throwDices() {
      for (let i = 0; i< NBR_OF_DICES; i++) {
