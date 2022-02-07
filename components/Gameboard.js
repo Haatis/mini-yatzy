@@ -3,10 +3,12 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {Text, View, Pressable} from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import styles from '../style/style';
+import { Col, Row, Grid } from "react-native-easy-grid";
 
 let board = [];
 let board2 = [];
 let board3 = [];
+let board4 = [];
 const NBR_OF_DICES = 5;
 const NBR_OF_THROWS = 5;
 const NBR_OF_POINTS = 6;
@@ -68,6 +70,19 @@ for (let i = 0; i < (NBR_OF_POINTS); i++){
         </Pressable>
     );
 }
+const row3 = [];
+  for (let i = 0; i< (NBR_OF_POINTS); i++){
+    row3.push(
+        <Grid>
+        <Col style={styles.numbers} size={5}>
+    {board4[i]}
+    </Col>
+    </Grid>
+    );
+  }
+
+
+
 
 
 
@@ -77,34 +92,46 @@ for (let i = 0; i < (NBR_OF_POINTS); i++){
      setSelectedDices(dices);
  }
 
-/*  function countPoints(i){
-    selectedDices.length missä on true
- } */
 
  function selectPoint(i){
+    if(selectedPoints[i]===true){
+        return
+    }
     let points = [...selectedPoints];
     points[i] = selectedPoints[i]=true;
     setSelectedPoints(points);
     let numbers = i+1;
     let sum = 0;
     for(let x=0 ; x<NBR_OF_DICES; x++){
+    
     if(numbers===board3[x]){
         sum+=board3[x];
         
     }
+
     setTotalPoints(sum);
+    board4[(i)]=sum;
 }
 }
  function throwDices() {
+    if(board4.length===0){
+        board4=[0,0,0,0,0,0]
+    }
      for (let i = 0; i< NBR_OF_DICES; i++) {
          if(!selectedDices[i]){
              let randomNumber = Math.floor(Math.random() * 6 + 1);
              board[i] = 'dice-' + randomNumber;
              board3[i] = randomNumber;
+            
          }
+         
      }
      for (let i = 0; i< NBR_OF_POINTS; i++) {
         board2[i] = 'numeric-' + (i+1) + '-circle';
+        
+        
+    
+        
 }
  
      setNbrOfThrowsLeft(nbrOfThrowsLeft-1);
@@ -128,6 +155,7 @@ for (let i = 0; i < (NBR_OF_POINTS); i++){
          <View style={styles.flex}>{row}</View>
         <Text style={styles.gameinfo}>throws left: {nbrOfThrowsLeft}</Text>
         <Text style={styles.gameinfo}>{status}</Text>
+        <View style={styles.flex}>{row3}</View>
         <View style={styles.flex}>{row2}</View>
         <Text style={styles.gameinfo}>Points: {totalPoints}</Text>
         <Pressable style={styles.button}

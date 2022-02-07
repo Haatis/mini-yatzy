@@ -42,7 +42,8 @@ export default StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     fontSize: 20,
-    marginTop: 10
+    marginTop: 10,
+    
   },
   row: {
     marginTop: 20,
@@ -63,6 +64,9 @@ export default StyleSheet.create({
   },
   buttonText: {
     color:"#2B2B52",
-    fontSize: 20
+    fontSize: 20,
+  },
+  numbers: {
+   marginHorizontal: 10,
   }
 });
