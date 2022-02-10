@@ -109,8 +109,11 @@ const row3 = [];
         
     }
 
-    setTotalPoints(sum);
+    
+    
     board4[(i)]=sum;
+    const sum1 =  board4.reduce((result,number)=> result+number);
+    setTotalPoints(sum1);
 }
 }
  function throwDices() {
