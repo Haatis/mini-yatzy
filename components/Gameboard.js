@@ -10,9 +10,9 @@ let board2 = [];
 let board3 = [];
 let board4 = [];
 const NBR_OF_DICES = 5;
-const NBR_OF_THROWS = 5;
+const NBR_OF_THROWS = 3;
 const NBR_OF_POINTS = 6;
-const WINNING_POINTS = 23;
+const POINTS_LEFT = 63;
 
 export default function Gameboard() {
  const [nbrOfThrowsLeft, setNbrOfThrowsLeft] = useState(NBR_OF_THROWS);
@@ -20,12 +20,9 @@ export default function Gameboard() {
  const [selectedDices,setSelectedDices] = useState(new Array(NBR_OF_DICES).fill(false));
  const [selectedPoints,setSelectedPoints] = useState(new Array(NBR_OF_POINTS).fill(false));
  const [totalPoints, setTotalPoints] =useState(0);
+ const [pointsLeft, setPointsLeft] = useState(POINTS_LEFT);
  function getDiceColor(i) {
-     if (board.every((val, i, arr) => val === arr[0])) {
-         return "orange";
-     }else {
          return selectedDices[i] ? "black" : "steelblue";
-     }
  }
  function getPointColor(i) {
     return selectedPoints[i] ? "black" : "steelblue";
@@ -95,7 +92,12 @@ const row3 = [];
 
  function selectPoint(i){
     if(selectedPoints[i]===true){
+        setStatus('You already selected points for ' + (i+1));
         return
+    } else if (nbrOfThrowsLeft>0){
+        setStatus('Throw 3 times before setting points')
+        return
+
     }
     let points = [...selectedPoints];
     points[i] = selectedPoints[i]=true;
@@ -114,9 +116,12 @@ const row3 = [];
     board4[(i)]=sum;
     const sum1 =  board4.reduce((result,number)=> result+number);
     setTotalPoints(sum1);
+    setPointsLeft(POINTS_LEFT-sum1);
+    
 }
 }
  function throwDices() {
+     
     if(board4.length===0){
         board4=[0,0,0,0,0,0]
     }
@@ -131,12 +136,8 @@ const row3 = [];
      }
      for (let i = 0; i< NBR_OF_POINTS; i++) {
         board2[i] = 'numeric-' + (i+1) + '-circle';
-        
-        
-    
-        
 }
- 
+
      setNbrOfThrowsLeft(nbrOfThrowsLeft-1);
  }
  function checkWinner(){
@@ -161,6 +162,8 @@ const row3 = [];
         <View style={styles.flex}>{row3}</View>
         <View style={styles.flex}>{row2}</View>
         <Text style={styles.gameinfo}>Points: {totalPoints}</Text>
+        <Text style={styles.gameinfo}>You are {pointsLeft} points away from bonus</Text>
+        
         <Pressable style={styles.button}
         onPress={() => throwDices()}>
             <Text style={styles.buttonText}>Throw dices</Text>
