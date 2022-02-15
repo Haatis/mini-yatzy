@@ -190,7 +190,7 @@ const row3 = [];
     setSelectedPoints(new Array(NBR_OF_POINTS).fill(false));
     setTotalPoints(0);
     setPointsLeft(POINTS_LEFT);
-    setMessage('');
+    setMessage(<Text style={styles.gameinfo}>You are {POINTS_LEFT} points away from bonus</Text>);
     setGameOn(true);
     board = [];
     board2 = [];
