@@ -1,9 +1,9 @@
 
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Text, View, Pressable} from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import styles from '../style/style';
-import { Col, Row, Grid } from "react-native-easy-grid";
+import { Col, Grid } from "react-native-easy-grid";
 
 let board = [];
 let board2 = [];
@@ -14,14 +14,20 @@ const NBR_OF_THROWS = 3;
 const NBR_OF_POINTS = 6;
 const POINTS_LEFT = 63;
 
+        
+
+
 export default function Gameboard() {
  const [nbrOfThrowsLeft, setNbrOfThrowsLeft] = useState(NBR_OF_THROWS);
+ const [nbrOfPointsLeft, setNbrOfPointsLeft] = useState(NBR_OF_POINTS);
  const [status, setStatus] = useState('');
  const [selectedDices,setSelectedDices] = useState(new Array(NBR_OF_DICES).fill(false));
  const [selectedPoints,setSelectedPoints] = useState(new Array(NBR_OF_POINTS).fill(false));
  const [totalPoints, setTotalPoints] =useState(0);
  const [pointsLeft, setPointsLeft] = useState(POINTS_LEFT);
- function getDiceColor(i) {
+ const [message, setMessage] = useState('');
+ const [gameOn, setGameOn] = useState(true);
+ function getDiceColor(i){ 
          return selectedDices[i] ? "black" : "steelblue";
  }
  function getPointColor(i) {
@@ -29,11 +35,22 @@ export default function Gameboard() {
 }
  useEffect(() => {
     checkWinner();
+    if (nbrOfPointsLeft===0){
+        setGameOn(false);
+    }
     if (nbrOfThrowsLeft === NBR_OF_THROWS) {
-        setStatus('Game has not started');
+        setStatus('Throw dices');
     }
     if (nbrOfThrowsLeft < 0){
         setNbrOfThrowsLeft(NBR_OF_THROWS-1);
+    }
+    if (pointsLeft===0 || pointsLeft<0) {
+        setMessage(<Text style={styles.gameinfo}>You got the bonus!</Text>)
+    } else {
+        setMessage(<Text style={styles.gameinfo}>You are {pointsLeft} points away from bonus</Text>)
+    }
+    if(nbrOfPointsLeft===0){
+        setStatus('Game Over');
     }
 }, [nbrOfThrowsLeft]);
 const row = [];
@@ -84,6 +101,9 @@ const row3 = [];
 
 
  function selectDice(i){
+     if (nbrOfThrowsLeft===3 ){
+         return
+     } 
      let dices = [...selectedDices];
      dices[i] = selectedDices[i] ? false : true;
      setSelectedDices(dices);
@@ -91,6 +111,9 @@ const row3 = [];
 
 
  function selectPoint(i){
+    if(nbrOfPointsLeft===0){
+        return
+    }
     if(selectedPoints[i]===true){
         setStatus('You already selected points for ' + (i+1));
         return
@@ -112,15 +135,24 @@ const row3 = [];
     }
 
     
-    
     board4[(i)]=sum;
     const sum1 =  board4.reduce((result,number)=> result+number);
     setTotalPoints(sum1);
     setPointsLeft(POINTS_LEFT-sum1);
-    
+    setNbrOfThrowsLeft(3);
+    setSelectedDices(new Array(NBR_OF_DICES).fill(false));
+    setNbrOfPointsLeft(nbrOfPointsLeft-1);
+   
 }
 }
  function throwDices() {
+    if(nbrOfPointsLeft===0){
+        return
+    }
+     if(nbrOfThrowsLeft===0){
+         setStatus('select points for this turn');
+         return
+     }
      
     if(board4.length===0){
         board4=[0,0,0,0,0,0]
@@ -141,17 +173,29 @@ const row3 = [];
      setNbrOfThrowsLeft(nbrOfThrowsLeft-1);
  }
  function checkWinner(){
-     if (board.every((val, i, arr) => val === arr[0]) && nbrOfThrowsLeft > 0) {
-         setStatus('You won');
-     } else if (board.every((val, i, arr) => val === arr[0] && nbrOfThrowsLeft === 0)){
-         setStatus('you won, game over');
-         setSelectedDices(new Array(NBR_OF_DICES).fill(false));
-     } else if(nbrOfThrowsLeft === 0){
-        setStatus('game over');
-        setSelectedDices(new Array(NBR_OF_DICES).fill(false))
+     
+   if(nbrOfThrowsLeft === 0){
+        setStatus('Select points');
+       
      }  else{
          setStatus('keep on throwing');
      }
+ }
+ 
+ function newGame(){
+    setNbrOfThrowsLeft(NBR_OF_THROWS);
+    setNbrOfPointsLeft(NBR_OF_POINTS);
+    setStatus('Throw dices');
+    setSelectedDices(new Array(NBR_OF_DICES).fill(false));
+    setSelectedPoints(new Array(NBR_OF_POINTS).fill(false));
+    setTotalPoints(0);
+    setPointsLeft(POINTS_LEFT);
+    setMessage('');
+    setGameOn(true);
+    board = [];
+    board2 = [];
+    board3 = [];
+    board4 = [];
  }
 
  return(
@@ -162,12 +206,23 @@ const row3 = [];
         <View style={styles.flex}>{row3}</View>
         <View style={styles.flex}>{row2}</View>
         <Text style={styles.gameinfo}>Points: {totalPoints}</Text>
-        <Text style={styles.gameinfo}>You are {pointsLeft} points away from bonus</Text>
+        <View>{message}</View>
+        <Text style={styles.gameinfo}></Text>
         
-        <Pressable style={styles.button}
+        {gameOn
+        ?<Pressable style={styles.button}
         onPress={() => throwDices()}>
             <Text style={styles.buttonText}>Throw dices</Text>
         </Pressable>
+
+        
+        : <Pressable style={styles.button}
+        onPress={() => newGame()}>
+        <Text style={styles.buttonText}>
+          New game
+          </Text>
+          </Pressable>
+      }
      </View>
  )
 }
